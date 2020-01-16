@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds field site api key in site information section
+ *
+ * @see \Drupal\system\Form\SiteInformationForm::buildForm()
+ */
+function custom_module_form_system_site_information_settings_alter(&$form, $form_state, $form_id) {
+
+  // Add Site API Key field to 'Site Information' section
+  $siteApiKey = \Drupal::config('siteapikey.configuration')->get('siteapikey');
+  $form['site_information']['modulename'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Site API Key'),
+      '#default_value' => $siteApiKey?$siteApiKey:'No Api Key yet',
+      '#description' => t('API Key to access pages.'),
+  );
+
+  // Change form submit button text to 'Update Configuration'
+  $form['actions']['submit']['#value'] = t('Update configuration');
+
+  // Handle form submission
+  $form['#submit'][] = 'custom_handler';
+}
+
+/**
+ * Implements custom handler.
+ */
+function custom_handler($form, &$form_state) {
+  // Update the system variable Site API Key
+  $config = \Drupal::configFactory()->getEditable('siteapikey.configuration');
+  $newApiKey = $form_state->getValue(['modulename']);
+  $config->set('siteapikey', $newApiKey);
+  $config->save();
+
+  // Add message that Site API Key has been set
+  drupal_set_message("Successfully set Site API Key to " . $newApiKey);
+}

@@ -1,0 +1,8 @@
+type: module
+name: Custom Module
+description: 'Custom Module.'
+package: Custom
+version: '8.x-1'
+core: '8.x'
+project: 'custom'
+datestamp: 1579184982
